@@ -6,39 +6,29 @@ export default function ChatBox() {
   const [messages, setMessages] = useState([]);
 
   async function handleSend() {
-    if (!input.trim()) return;
-
-    const userText = input;
+    const userMsg = { role: "user", text: input };
+    setMessages((m) => [...m, userMsg, { role: "bot", text: "" }]);
     setInput("");
 
-    setMessages(prev => [...prev, { role: "user", text: userText }]);
-
-    let botText = "";
-    setMessages(prev => [...prev, { role: "bot", text: "" }]);
-
-    await sendMessageStream(userText, (chunk) => {
-      botText += chunk;
-      setMessages(prev => {
-        const copy = [...prev];
-        copy[copy.length - 1] = { role: "bot", text: botText };
-        return copy;
+    try {
+      await sendMessageStream(input, (chunk) => {
+        setMessages((msgs) => {
+          const copy = [...msgs];
+          copy[copy.length - 1].text += chunk;
+          return copy;
+        });
       });
-    });
-
-    // 👇 completion marker
-    setMessages(prev => {
-      const copy = [...prev];
-      copy[copy.length - 1] = {
-        role: "bot",
-        text: botText + "\n\n✅ Analysis complete."
-      };
-      return copy;
-    });
+    } catch (e) {
+      setMessages((m) => [
+        ...m,
+        { role: "bot", text: "❌ Backend error" },
+      ]);
+    }
   }
 
   return (
     <div>
-      <div style={{ minHeight: 200 }}>
+      <div>
         {messages.map((m, i) => (
           <div key={i}>
             <b>{m.role}:</b> {m.text}
