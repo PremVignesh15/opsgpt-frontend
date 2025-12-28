@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   }
 
   const BACKEND_URL =
-    "https://invoice-showers-swing-viewers.trycloudflare.com/chat-stream";
+    "https://penetration-inside-captain-carry.trycloudflare.com";
 
   try {
     const response = await fetch(BACKEND_URL, {
