@@ -1,47 +1,70 @@
 import { useState } from "react";
 import { sendMessageStream } from "../services/api";
+import MessageBubble from "./MessageBubble";
 
 export default function ChatBox() {
-  const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSend() {
-    const userMsg = { role: "user", text: input };
-    setMessages((m) => [...m, userMsg, { role: "bot", text: "" }]);
+    if (!input.trim()) return;
+
+    const userMessage = { role: "user", text: input };
+    const botMessage = { role: "bot", text: "" };
+
+    setMessages((prev) => [...prev, userMessage, botMessage]);
     setInput("");
+    setLoading(true);
 
     try {
       await sendMessageStream(input, (chunk) => {
-        setMessages((msgs) => {
-          const copy = [...msgs];
-          copy[copy.length - 1].text += chunk;
-          return copy;
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            ...botMessage,
+            text: updated[updated.length - 1].text + chunk,
+          };
+          return updated;
         });
       });
-    } catch (e) {
-      setMessages((m) => [
-        ...m,
-        { role: "bot", text: "❌ Backend error" },
-      ]);
+    } catch (err) {
+      alert("Streaming failed");
     }
+
+    setLoading(false);
   }
 
   return (
-    <div>
-      <div>
+    <>
+      <div style={{ minHeight: 400 }}>
         {messages.map((m, i) => (
-          <div key={i}>
-            <b>{m.role}:</b> {m.text}
-          </div>
+          <MessageBubble key={i} role={m.role} text={m.text} />
         ))}
       </div>
 
-      <input
+      <textarea
+        rows={4}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Ask OpsGPT..."
+        placeholder="Paste logs here..."
+        style={{ width: "100%", marginTop: 10, padding: 10 }}
       />
-      <button onClick={handleSend}>Send</button>
-    </div>
+
+      <button
+        onClick={handleSend}
+        disabled={loading}
+        style={{
+          marginTop: 10,
+          padding: "10px 20px",
+          background: "#2563eb",
+          border: "none",
+          color: "white",
+          borderRadius: 6,
+        }}
+      >
+        {loading ? "Analyzing..." : "Send"}
+      </button>
+    </>
   );
 }
