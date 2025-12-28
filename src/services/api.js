@@ -1,20 +1,14 @@
-const BASE_URL = "https://penetration-inside-captain-carry.trycloudflare.com";
+const BASE_URL = "https://rate-start-inside-buried.trycloudflare.com";
 
 export async function sendMessageStream(message, onChunk) {
-  const response = await fetch(`${BASE_URL}/chat-stream`, {
+  const res = await fetch(`${BASE_URL}/chat-stream`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
   });
 
-  if (!response.ok) {
-    throw new Error("Backend did not respond correctly");
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder("utf-8");
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
 
   while (true) {
     const { value, done } = await reader.read();
@@ -22,4 +16,3 @@ export async function sendMessageStream(message, onChunk) {
     onChunk(decoder.decode(value));
   }
 }
-
