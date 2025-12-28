@@ -1,12 +1,20 @@
+const BASE_URL = "https://invoice-showers-swing-viewers.trycloudflare.com";
+
 export async function sendMessageStream(message, onChunk) {
-  const res = await fetch("/api/chat", {
+  const response = await fetch(`${BASE_URL}/chat-stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ message }),
   });
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
+  if (!response.ok) {
+    throw new Error("Backend did not respond correctly");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
 
   while (true) {
     const { value, done } = await reader.read();
