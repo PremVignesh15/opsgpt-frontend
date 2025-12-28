@@ -28,16 +28,26 @@ export default function ChatBox() {
           return updated;
         });
       });
-    } catch (err) {
-      alert("Streaming failed");
+    } catch (e) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", text: "⚠️ Backend error occurred." },
+      ]);
     }
 
     setLoading(false);
   }
 
   return (
-    <>
-      <div style={{ minHeight: 400 }}>
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: 12,
+        padding: 20,
+        boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
+      }}
+    >
+      <div style={{ minHeight: 300, marginBottom: 16 }}>
         {messages.map((m, i) => (
           <MessageBubble key={i} role={m.role} text={m.text} />
         ))}
@@ -48,23 +58,31 @@ export default function ChatBox() {
         value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder="Paste logs here..."
-        style={{ width: "100%", marginTop: 10, padding: 10 }}
+        style={{
+          width: "100%",
+          padding: 12,
+          borderRadius: 8,
+          border: "1px solid #e5e7eb",
+          marginBottom: 12,
+          resize: "vertical",
+        }}
       />
 
       <button
         onClick={handleSend}
         disabled={loading}
         style={{
-          marginTop: 10,
-          padding: "10px 20px",
-          background: "#2563eb",
-          border: "none",
+          backgroundColor: "#2563eb",
           color: "white",
-          borderRadius: 6,
+          padding: "10px 18px",
+          borderRadius: 8,
+          border: "none",
+          fontSize: 14,
+          fontWeight: 600,
         }}
       >
-        {loading ? "Analyzing..." : "Send"}
+        {loading ? "Analyzing…" : "Send"}
       </button>
-    </>
+    </div>
   );
 }
