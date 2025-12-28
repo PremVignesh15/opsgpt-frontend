@@ -1,18 +1,12 @@
-const API_BASE = "https://invoice-showers-swing-viewers.trycloudflare.com";
-
 export async function sendMessageStream(message, onChunk) {
-  const res = await fetch(`${API_BASE}/chat-stream`, {
+  const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
   });
 
-  if (!res.ok || !res.body) {
-    throw new Error("Backend not reachable");
-  }
-
   const reader = res.body.getReader();
-  const decoder = new TextDecoder("utf-8");
+  const decoder = new TextDecoder();
 
   while (true) {
     const { value, done } = await reader.read();
