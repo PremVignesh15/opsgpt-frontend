@@ -1,4 +1,4 @@
-const BASE_URL = "https://extra-startup-arthritis-phones.trycloudflare.com";
+const BASE_URL = "https://manually-utah-utah-compound.trycloudflare.com";
 
 export async function sendMessageStream(message, onChunk) {
   const res = await fetch(`${BASE_URL}/chat-stream`, {
@@ -20,3 +20,4 @@ export async function sendMessageStream(message, onChunk) {
     onChunk(decoder.decode(value));
   }
 }
+
