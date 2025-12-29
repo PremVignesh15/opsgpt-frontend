@@ -1,4 +1,4 @@
-const BASE_URL = "https://crossing-rom-half-actors.trycloudflare.com";
+const BASE_URL = "https://databases-routine-sport-disposition.trycloudflare.com";
 
 export async function sendMessageStream(message, onChunk) {
   const res = await fetch(`${BASE_URL}/chat-stream`, {
@@ -20,6 +20,7 @@ export async function sendMessageStream(message, onChunk) {
     onChunk(decoder.decode(value));
   }
 }
+
 
 
 
